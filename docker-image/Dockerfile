@@ -3,13 +3,17 @@ MAINTAINER bluekvirus@gmail.com
 
 # ENV (map a local folder ./ into this docker by -v $(pwd):/code, this folder should contain all of your .py crawlers)
 ENV CRAWLER_FOLDER /code
-ADD scrapy.cfg ${CRAWLER_FOLDER}/scrapy.cfg
 
 # Install prerequisite
 RUN apt-get update
-RUN apt-get install -y --no-install-recommends python-dev python-pip libxml2-dev libxslt1-dev zlib1g-dev libffi-dev libssl-dev
-RUN apt-get install -y python3 python3-dev python3-pip
-RUN pip3 install scrapy ipython
+# Scrapy and IPython system deps
+RUN apt-get install -y --no-install-recommends gcc libxml2-dev libxslt1-dev zlib1g-dev libffi-dev libssl-dev
+# We want both under Python 3.5+ instead of 2.7
+RUN apt-get install -y --no-install-recommends python3 python3-dev python3-pip
+# Pip deps's deps during install
+RUN pip3 install -U setuptools wheel
+# Finally the real thing needed
+RUN pip3 install -U ipython scrapy
 
 # Clean up APT when done
 RUN apt-get clean \
@@ -18,6 +22,10 @@ RUN apt-get clean \
 # Working dir mount
 RUN mkdir -p ${CRAWLER_FOLDER}
 WORKDIR ${CRAWLER_FOLDER}
+
+# Entrypoint 
+ADD init.sh /init.sh
+ENTRYPOINT [ "/init.sh" ]
 
 # CMD (outside)
 # docker run -it --rm -v $(pwd):/code
@@ -30,6 +38,6 @@ WORKDIR ${CRAWLER_FOLDER}
 # B: run spider by file
 # scrapy runspider <crawler.py> [-o items.json]
 #
-# C: run spider defined in Scrapy project (after startproject, genspider)
+# C: run spider defined in current Scrapy project (after startproject, genspider)
 # scrapy crawl <crawler by name>
 
