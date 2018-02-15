@@ -1,3 +1,6 @@
 #!/bin/bash
 
-chmod -R 777 /code
+useradd -s /bin/false $USER
+chown -R $USER:$USER $CRAWLER_FOLDER
+
+/bin/bash

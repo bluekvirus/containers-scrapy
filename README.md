@@ -5,7 +5,7 @@ Scrapy with Python 3 in a docker env, ready to deploy in any dev machine.
 
 ### Outside of container
 ```
-docker run -it --rm -v $(pwd):/code bluekvirus/scrapy
+docker run -it --rm -v $(pwd):/code -e USER=<your user on host> bluekvirus/scrapy
 ```
 
 ### Inside of container

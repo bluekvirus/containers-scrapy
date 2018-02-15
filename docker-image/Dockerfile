@@ -1,9 +1,6 @@
 FROM ubuntu:xenial
 MAINTAINER bluekvirus@gmail.com
 
-# ENV (map a local folder ./ into this docker by -v $(pwd):/code, this folder should contain all of your .py crawlers)
-ENV CRAWLER_FOLDER /code
-
 # Install prerequisite
 RUN apt-get update
 # Scrapy and IPython system deps
@@ -19,6 +16,10 @@ RUN pip3 install -U ipython scrapy
 RUN apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# ENV (map a local folder ./ into this docker by -v $(pwd):/code -e USER=<user>, this folder should contain all of your .py crawlers)
+ENV CRAWLER_FOLDER /code
+ENV USER tim
+
 # Working dir mount
 RUN mkdir -p ${CRAWLER_FOLDER}
 WORKDIR ${CRAWLER_FOLDER}
@@ -28,7 +29,7 @@ ADD init.sh /init.sh
 ENTRYPOINT [ "/init.sh" ]
 
 # CMD (outside)
-# docker run -it --rm -v $(pwd):/code
+# docker run -it --rm -v $(pwd):/code -e USER=<your user on host OS, default is tim> bluekvirus/scrapy
 
 # CMD (inside)
 #
