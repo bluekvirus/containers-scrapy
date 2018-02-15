@@ -1,6 +1,7 @@
 #!/bin/bash
 
-useradd -s /bin/false $USER
+useradd -s /bin/bash $USER
 chown -R $USER:$USER $CRAWLER_FOLDER
 
+su $USER
 /bin/bash

@@ -10,7 +10,7 @@ RUN apt-get install -y --no-install-recommends python3 python3-dev python3-pip
 # Pip deps's deps during install
 RUN pip3 install -U setuptools wheel
 # Finally the real thing needed
-RUN pip3 install -U ipython scrapy
+RUN pip3 install -U ipython scrapy requests
 
 # Clean up APT when done
 RUN apt-get clean \

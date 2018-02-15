@@ -16,9 +16,11 @@ class NvGpuNowinstockSpider(scrapy.Spider):
     def parse(self, response):
         gpu_type = response.css('div#trackerHeading h3::text').extract_first()
         history_list = response.css('div#history td::text').extract()
-        new_entries = list(zip(history_list[::2], history_list[1::2]))
+        new_entry_tuples = list(zip(history_list[::2], history_list[1::2]))
+        new_entries_set = list(map(lambda item: item[0] + ' >>> ' + item[1], new_entry_tuples))
         item = {
             'gpu_type': gpu_type,
-            'new_entries': new_entries,
+            'new_entry_tuples': new_entry_tuples,
+            'new_entries_set': new_entries_set,
         }
         yield item
