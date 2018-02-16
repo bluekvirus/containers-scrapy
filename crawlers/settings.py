@@ -90,4 +90,5 @@ ITEM_PIPELINES = {
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
+# Make sure to create this folder after project git clone.
 SPIDER_CACHE_DIR = './.cache/'
