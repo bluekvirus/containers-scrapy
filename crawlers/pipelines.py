@@ -20,7 +20,7 @@ class NowInStockPipeline(object):
     Old entries will be cached into a file and serve as a baseline for 
     the next crawl.
 
-    Default environment var REPORT_RATIO_THRESHOLD is set to be 2.0, this means 
+    Default environment var REPORT_RATIO_THRESHOLD is set to be 1.7, this means 
     item that has a price point over 200% of the base price will not be 
     sent to Slack channel.
 
@@ -47,20 +47,35 @@ class NowInStockPipeline(object):
                         ratio = float(entry[dollar_match.start()+1:dollar_match.end()].replace(',', '')) / float(self.meta['price'][item['gpu_type']])
                         if ratio < 1.1:
                             emo = ':+1:'
-                        elif ratio >= 1.2 and ratio < 1.4:
+                        elif ratio >= 1.3 and ratio < 1.55:
                             emo = ':dizzy_face:'
-                        elif ratio >= 1.4:
+                        elif ratio >= 1.55:
                             emo = ':scream:'
                         else:
                             emo = ':confused:'
                         ## 2 send to webhook
-                        if ratio < float(os.environ.get('REPORT_RATIO_THRESHOLD', 2.0)):
+                        if ratio < float(os.environ.get('REPORT_RATIO_THRESHOLD', 1.7)):
+                            index = item['new_entries_set'].index(entry)
                             requests.post(os.environ.get(
                                 'SLACK_WEBHOOK', 'https://hooks.slack.com/services/x/y/z'),
-                                json={"text": entry + ' ' + emo + ' {:.1f}%'.format(ratio * 100)}
+                                json={"text": item['new_entries'][index][1] + ' ' + emo + ' *{:.1f}%'.format(
+                                    ratio * 100) + '*',
+                                    "attachments": [
+                                        {
+                                            "fallback": "Buy at " + item['new_entries'][index][2],
+                                            "actions": [
+                                                {
+                                                    "type": "button",
+                                                    "text": "Buy",
+                                                    "style": "primary",
+                                                    "url": item['new_entries'][index][2]
+                                                }
+                                            ]
+                                        }
+                                    ]}
                                 )
                         else:
-                            spider.logger.info('Not reported, filtered by REPORT_RATIO_THRESHOLD\n')
+                            spider.logger.info('Not reported, filtered by REPORT_RATIO_THRESHOLD < {:.2f} \n'.format(ratio))
                     ##################
             self.cache[item['gpu_type']] = item['new_entries_set']
         return item

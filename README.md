@@ -1,5 +1,5 @@
 # containers-scrapy
-Scrapy with Python 3 in a docker env, ready to deploy in any dev machine.
+Scrapy with Python 3 in a docker env, ready to deploy in any dev machine or runtime node.
 
 ## Commands
 
@@ -10,8 +10,6 @@ Scrapy with Python 3 in a docker env, ready to deploy in any dev machine.
 docker run -it --rm \
     -v $(pwd):/code \
     -e USER=<your user on host> \
-    --log-opt max-size=5m \
-    --log-opt max-file=1 \
     bluekvirus/scrapy
 ```
 
@@ -26,6 +24,11 @@ docker run -d --rm \
     bluekvirus/scrapy
 ```
 Note that the spider/pipeline might require futher environment vars to operate, be sure to provide them with additional `-e` ! (e.g SLACK_WEBHOOK and REPORT_RATIO_THRESHOLD in nv-gpu-nowinstock spider's pipeline)
+
+Real runtime cmd example
+```
+sudo docker run -d --log-opt max-size=5m --log-opt max-file=1 -v $(pwd):/code -e SPIDER_NAME=nv-gpu-nowinstock -e SLACK_WEBHOOK=https://hooks.slack.com/services/.../.../y0D46F4443McqHW8PRjUitNS -e REPORT_RATIO_THRESHOLD=1.35 bluekvirus/scrapy
+```
 
 We do not have repository branching support at the moment, cloned Scrapy repository will always use *master* by default.
 
